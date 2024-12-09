@@ -30,7 +30,7 @@ def main(label, model,special_tokens,device,tokenizer):
         eos_token_id=1,
         pad_token_id=0,
         do_sample=True,
-        num_return_sequences=30) # Depending non your GPU, you'll be able to generate fewer or more sequences. This runs in an A40.
+        num_return_sequences=5) # Depending non your GPU, you'll be able to generate fewer or more sequences. This runs in an A40.
     
     new_outputs = [ output for output in outputs if output[-1] == 0]
     if not new_outputs:
@@ -57,7 +57,8 @@ if __name__=='__main__':
             '3.5.2.12', '3.5.1.46', '3.5.1.117']
 
     for label in tqdm(labels):
-        for i in range(0,1000): 
+        print("Generating sequences for label: ", label)
+        for i in range(0,10000): 
             tokenizer = AutoTokenizer.from_pretrained('AI4PD/ZymCTRL')
             model = GPT2LMHeadModel.from_pretrained('AI4PD/ZymCTRL').to(device)
     
