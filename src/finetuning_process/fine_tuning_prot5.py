@@ -8,7 +8,6 @@ from json import dump
 import gc
 from sklearn.utils import shuffle
 import argparse
-parser = argparse.ArgumentParser()
 
 def compute_metrics(pred):
 
@@ -26,10 +25,21 @@ def compute_metrics(pred):
 
 # Tokenize function
 def tokenize_function(examples):
-    return tokenizer(examples["sequence"], padding="max_length", truncation=True, max_length=512)
+    return tokenizer(
+        examples["sequence"], 
+        padding="max_length", 
+        truncation=True, 
+        max_length=max_length)
+
+#del model
+gc.collect()
+torch.cuda.empty_cache()
+
+parser = argparse.ArgumentParser()
+
 
 # Check for GPU
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda")
 print(f"Using device: {device}")
 
 parser.add_argument(
@@ -78,6 +88,8 @@ parser.add_argument(
     type=int,
     default=10)
 
+print("Parsing arguments")
+
 args = parser.parse_args()
 
 df_data = pd.read_csv(args.dataset)
@@ -88,6 +100,7 @@ model_name = f"Rostlab/{args.model_name}"
 max_length = args.max_lenght
 early_stopping_patience = args.early_stop
 
+print("Processing dataset")
 df_pos = df_data[df_data["label"] == 1]
 df_neg = df_data[df_data["label"] == 0]
 df_neg = shuffle(df_neg, n_samples=len(df_pos), random_state=random_seed)
@@ -95,38 +108,24 @@ df_data = pd.concat([df_pos, df_neg], axis=0)
 
 name_model = model_name.split("/")[-1]
 
-
+print("Load model")
+model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2).to(device)
 tokenizer = T5Tokenizer.from_pretrained(model_name)
+
+print(model)
 
 df_data.columns = ["sequence", "label"]  # Ensure the column names match
 
+print("Tokenize and prepare for training")
 # Convert to Hugging Face Dataset
 dataset = Dataset.from_pandas(df_data)
 
-# Split dataset
-dataset = dataset.train_test_split(test_size=test_size, seed=random_seed)
-train_dataset = dataset["train"]
-eval_dataset = dataset["test"]
+tokenized_datasets = dataset.map(tokenize_function, batched=True)
 
-print(f"Train size: {len(train_dataset)}, Eval size: {len(eval_dataset)}")
+train_test_split = tokenized_datasets.train_test_split(test_size=test_size, seed=random_seed)
 
-# Apply tokenizer
-train_dataset = train_dataset.map(tokenize_function, batched=True)
-eval_dataset = eval_dataset.map(tokenize_function, batched=True)
-
-# Remove unused columns
-train_dataset = train_dataset.remove_columns(["sequence"])
-eval_dataset = eval_dataset.remove_columns(["sequence"])
-
-# Set format for PyTorch
-train_dataset.set_format("torch")
-eval_dataset.set_format("torch")
-
-num_labels = 2
-model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=num_labels).to(device)
-
-for param in model.base_model.parameters():
-    param.requires_grad = False
+train_dataset = train_test_split['train']
+eval_dataset = train_test_split['test']
 
 training_args = TrainingArguments(
     output_dir=f"{path_export}check_points_{name_model}",       
@@ -161,16 +160,7 @@ pytorch_trainable_params = sum(p.numel() for p in model.parameters() if p.requir
 print("non trainable: ", pytorch_non_trainable_params)
 print("trainable: ", pytorch_trainable_params)
 
-for index, param in enumerate(model.parameters()):
-    param.requires_grad=False
-
-pytorch_non_trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad == False)
-pytorch_trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-
-print("non trainable: ", pytorch_non_trainable_params)
-print("trainable: ", pytorch_trainable_params)
-
-'''
+print("Train model")
 trainer.train()
 
 eval_results = trainer.evaluate()
@@ -183,7 +173,6 @@ name_model = model_name.split("/")[-1]
 
 model.save_pretrained(f"{path_export}finetuned_{name_model}")
 tokenizer.save_pretrained(f"{path_export}finetuned_{name_model}")
-'''
 
 #del model
 gc.collect()

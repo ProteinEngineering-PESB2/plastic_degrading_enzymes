@@ -2,8 +2,10 @@ import torch
 from transformers import GPT2LMHeadModel, AutoTokenizer
 import os
 from tqdm import tqdm
+import pandas as pd
 import math
 import gc
+import sys
 
 def remove_characters(sequence, char_list):
     "This function removes special tokens used during training."
@@ -47,29 +49,34 @@ def main(label, model,special_tokens,device,tokenizer):
 
 if __name__=='__main__':
 
-    device = torch.device("cuda")
+    label = sys.argv[1]
+    number_device = int(sys.argv[2])
+
+    device = torch.device(f"cuda:{number_device}")
     torch.cuda.empty_cache()
 
     print('Reading pretrained model and tokenizer')
     special_tokens = ['<start>', '<end>', '<|endoftext|>','<pad>',' ', '<sep>']
 
-    labels=['3.1.1.1', '3.1.1.74', '3.1.1.3', '3.1.1.101', '3.1.1.102',
-            '3.5.2.12', '3.5.1.46', '3.5.1.117']
+    #labels=['3.1.1.74', '3.1.1.3', '3.1.1.101', '3.1.1.102',
+    #        '3.5.2.12', '3.5.1.46', '3.5.1.117']
 
-    for label in tqdm(labels):
-        print("Generating sequences for label: ", label)
-        for i in range(0,10000): 
-            tokenizer = AutoTokenizer.from_pretrained('AI4PD/ZymCTRL')
-            model = GPT2LMHeadModel.from_pretrained('AI4PD/ZymCTRL').to(device)
-    
-            sequences = main(label, model, special_tokens, device, tokenizer)
-            for key,value in sequences.items():
-                for index, val in enumerate(value):
-                    fn = open(f"../../results/generated_sequences/{label}_{i}_{index}.fasta", "w")
-                    fn.write(f'>{label}_{i}_{index}\t{val[1]}\n{val[0]}')
-                    fn.close()
+    print("Generating sequences for label: ", label)
+    matrix_data = []
+    for i in range(0,5000): 
+        tokenizer = AutoTokenizer.from_pretrained('AI4PD/ZymCTRL')
+        model = GPT2LMHeadModel.from_pretrained('AI4PD/ZymCTRL').to(device)
 
-            torch.cuda.empty_cache()
-            del tokenizer
-            del model
-            gc.collect()
+        sequences = main(label, model, special_tokens, device, tokenizer)
+        for key,value in sequences.items():
+            for index, val in enumerate(value):
+                row = [val[0], val[1]]
+                matrix_data.append(row)
+                
+        torch.cuda.empty_cache()
+        del tokenizer
+        del model
+        gc.collect()
+
+    df_export = pd.DataFrame(data=matrix_data, columns=["sequence", "perplexity"])
+    df_export.to_csv(f"/scratch/global_1/dmedina/results_generating_enzymes/generated_sequences/{label}.csv", index=False)

@@ -12,6 +12,9 @@ from sklearn.utils import shuffle
 import argparse
 parser = argparse.ArgumentParser()
 
+gc.collect()
+torch.cuda.empty_cache()
+
 def compute_metrics(pred):
     labels = pred.label_ids
     preds = pred.predictions.argmax(-1)
@@ -33,7 +36,8 @@ def tokenize_function(examples):
         max_length=max_length
     )
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:0")
+
 print(f"Using device: {device}")
 
 parser.add_argument(
@@ -101,6 +105,12 @@ name_model = model_name.split("/")[-1]
 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2).to(device)
+
+for index, param in enumerate(model.parameters()):
+    param.requires_grad=False
+    
+for index, param in enumerate(model.classifier.parameters()):
+    param.requires_grad=True
 
 df_data.columns = ["sequence", "label"]
 
