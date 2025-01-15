@@ -1,0 +1,7 @@
+Algorithm,Encoder,mean_accuracy_training_x,mean_f_score_training_x,mean_precision_training_x,mean_recall_training_x,mean_accuracy_testing_x,mean_f_score_testing_x,mean_precision_testing_x,mean_recall_testing_x,mean_accuracy_testing_y,mean_f_score_testing_y,mean_precision_testing_y,mean_recall_testing_y,mean_accuracy_training_y,mean_f_score_training_y,mean_precision_training_y,mean_recall_training_y,Voting
+AdaBoostClassifier,protrans_albert,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,16
+AdaBoostClassifier,protrans_xlnet,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,16
+ExtraTrees-ensemble,esme,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,16
+LGBMClassifier,glove,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,16
+RandomForestClassifier,esm1b,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,16
+RidgeClassifier,protrans_albert,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,16
