@@ -37,10 +37,6 @@ Plastic pollution presents a critical environmental challenge, necessitating inn
 
 <a name="pipeline"></a>
 
-## Discovering potential plastic degrading enzymes using machine learning strategies
-
-<a name="pipeline"></a>
-
 ## Implemented pipeline to train classification models
 
 <a name="data"></a>
@@ -56,7 +52,24 @@ The folder [raw_data](raw_data) contains:
 
 ## Numerical representation strategies explored in this work
 
-This work explores different numerical representation strategies to process the input enzyme sequences
+This work explores different numerical representation strategies to process the input enzyme sequences. See the notebooks in folder [encoding_approaches](src/encoding_approaches) for details about the execution.
+
+The encoding strategies including:
+
+1. Feature engineering
+2. Frequency encoders
+3. k-mers encoders
+4. One-hot encoders
+5. Ordinal encoders
+6. Physicochemical-based encoders
+7. FFT-based encoders
+8. Embeddings throug pre-trained protein language models.
+
+- In the case of physicochemical-based and FFT-based the physicochemical properties encoders used were extracted from [3]. 
+
+- In the case of embedding, the bioembedding library was employed [4].
+
+The numerical representation strategies take the input data [input_data](raw_data/data_sequences.csv), apply the encoder strategy, and generate the outputs with the encoder sequences. The folder [processed_dataset](processed_dataset) contains the results of all encoder strategies explored in this work.
 
 <a name="training"></a>
 
@@ -72,3 +85,5 @@ This work explores different numerical representation strategies to process the 
 
 - [1] Dallago, C., Schütze, K., Heinzinger, M., Olenyi, T., Littmann, M., Lu, A. X., ... & Rost, B. (2021). Learned embeddings from deep learning to visualize and predict protein sets. Current Protocols, 1(5), e113.
 - [2] Sankara Subramanian, S. H., Balachandran, K. R. S., Rangamaran, V. R., & Gopal, D. (2020). RemeDB: tool for rapid prediction of enzymes involved in bioremediation from high-throughput metagenome data sets. Journal of Computational Biology, 27(7), 1020-1029.
+- [3] 
+- [4]
