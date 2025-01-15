@@ -39,6 +39,8 @@ Plastic pollution presents a critical environmental challenge, necessitating inn
 
 ## Implemented pipeline to train classification models
 
+![alt text](figures_paper/pipeline_training_models.png)
+
 <a name="data"></a>
 
 ## Raw data and processing strategies
