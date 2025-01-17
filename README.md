@@ -21,7 +21,6 @@ https://doi.org/XXXX<br>
 - [Raw data and preprocessing](#data)
 - [Numerical representation strategies](#numerical)
 - [Training, selecting, and generating models](#training)
-- [Using models](#using)
 - [References](#references)
 ---
 
@@ -35,9 +34,21 @@ Plastic pollution presents a critical environmental challenge, necessitating inn
 
 ## Requirements
 
+This work was implemented on Python v3.12. To facilitate the deployment and the replication of the work, an [environment file](environment.yml) was constructed 
+
+To create the environment, please run the following command: 
+
+```
+conda create -f environment.yml
+```
+
+Moreover, if you want to check all generated embedding and numerical representation strategies, you can find it as a tar.gz files in the shared [Google Drive folder](https://drive.google.com/drive/folders/1ntv4T_ypvuOBGmSrRN5pqi1ydBIBcrmp?usp=sharing).
+
 <a name="pipeline"></a>
 
 ## Implemented pipeline to train classification models
+
+The implemented pipeline to train the classification models is based on our previous work [2]
 
 ![alt text](figures_paper/pipeline_training_models.png)
 
@@ -48,7 +59,7 @@ Plastic pollution presents a critical environmental challenge, necessitating inn
 The folder [raw_data](raw_data) contains:
 - **enzymes_plastics**: pivoted csv file with each plastic-substrate target detected 
 - **data_sequences**: csv file with unique sequences collected from the pivoted dataset
-- **reme_db_sequences**: csv file with plastic-degrading enzymes extracted from RemeDB [2]
+- **reme_db_sequences**: csv file with plastic-degrading enzymes extracted from RemeDB [3]
 
 <a name="numerical"></a>
 
@@ -67,9 +78,9 @@ The encoding strategies including:
 7. FFT-based encoders
 8. Embeddings throug pre-trained protein language models.
 
-- In the case of physicochemical-based and FFT-based the physicochemical properties encoders used were extracted from [3]. 
+- In the case of physicochemical-based and FFT-based the physicochemical properties encoders used were extracted from [4]. 
 
-- In the case of embedding, the bioembedding library was employed [4].
+- In the case of embedding, the bioembedding library was employed [5].
 
 The numerical representation strategies take the input data [input_data](raw_data/data_sequences.csv), apply the encoder strategy, and generate the outputs with the encoder sequences. The folder [processed_dataset](processed_dataset) contains the results of all encoder strategies explored in this work.
 
@@ -77,15 +88,39 @@ The numerical representation strategies take the input data [input_data](raw_dat
 
 ## Training strategies applied to develop classification models
 
-<a name="using"></a>
+This work explores different supervised learning strategies to train binary classification models. The folder [train_models](src/train_models/) has the script implemented for the development of classification models, including:
 
-## Using the models trained with new enzyme sequences
+- classification_models.py
+- training_model.py
+- run_training_process.py
+- merging_performances_by_plastic.ipynb
+
+The script training_model.py facilitate the training during exploration step for all type of plastic explored in this work.
+
+Besides, in the folder [selecting_models](src/selecting_models/) you will find scripts for analyzing the results of the exploration performances and for selecting the best combinations of supervised learning algorithms and numerical representation strategies.
+
+Finally, the folder [checking_and_characterizing_models](src/checking_and_characterizing_models/) facilitates the processing, voting, and genering the trained models to use to classify new sequences.
+
+These models were used for analyzing:
+
+- Generated sequences throug the pre-trained model ZymCTRL [6]. The folder [generating_sequences](src/generating_sequences/) contain the scripts implemented for the enzyme sequences generation
+- Plastic-degrading enzymes with unknown plastic-substrate target collected from RemeDB [7]
+
+See folder [exploring_generated_sequences](src/exploring_generated_sequences/) for more details. These scripts facilitate:
+
+- Loading enzyme sequences previously encoded
+- Loading models
+- Using the models for predicting with classification and probabilities
+- Filter the classification based on a threshold (default threshold=0.5)
 
 <a name="references"> </a>
 
 ## References
 
 - [1] Dallago, C., Schütze, K., Heinzinger, M., Olenyi, T., Littmann, M., Lu, A. X., ... & Rost, B. (2021). Learned embeddings from deep learning to visualize and predict protein sets. Current Protocols, 1(5), e113.
-- [2] Sankara Subramanian, S. H., Balachandran, K. R. S., Rangamaran, V. R., & Gopal, D. (2020). RemeDB: tool for rapid prediction of enzymes involved in bioremediation from high-throughput metagenome data sets. Journal of Computational Biology, 27(7), 1020-1029.
-- [3] 
-- [4]
+- [2] Medina-Ortiz, D., Contreras, S., Fernández, D., Soto-García, N., Moya, I., Cabas-Mora, G., & Olivera-Nappa, Á. (2024). Protein language models and machine learning facilitate the identification of antimicrobial peptides. International Journal of Molecular Sciences, 25(16), 8851.
+- [3] Sankara Subramanian, S. H., Balachandran, K. R. S., Rangamaran, V. R., & Gopal, D. (2020). RemeDB: tool for rapid prediction of enzymes involved in bioremediation from high-throughput metagenome data sets. Journal of Computational Biology, 27(7), 1020-1029.
+- [4] Medina-Ortiz, D., Contreras, S., Amado-Hinojosa, J., Torres-Almonacid, J., Asenjo, J. A., Navarrete, M., & Olivera-Nappa, Á. (2022). Generalized property-based encoders and digital signal processing facilitate predictive tasks in protein engineering. Frontiers in Molecular Biosciences, 9, 898627.
+- [5] Dallago, C., Schütze, K., Heinzinger, M., Olenyi, T., Littmann, M., Lu, A. X., ... & Rost, B. (2021). Learned embeddings from deep learning to visualize and predict protein sets. Current Protocols, 1(5), e113.
+- [6] Munsamy, G., Lindner, S., Lorenz, P., & Ferruz, N. (2022, December). ZymCTRL: a conditional language model for the controllable generation of artificial enzymes. In NeurIPS Machine Learning in Structural Biology Workshop.
+- [7] Sankara Subramanian, S. H., Balachandran, K. R. S., Rangamaran, V. R., & Gopal, D. (2020). RemeDB: tool for rapid prediction of enzymes involved in bioremediation from high-throughput metagenome data sets. Journal of Computational Biology, 27(7), 1020-1029.
