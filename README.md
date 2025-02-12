@@ -5,7 +5,7 @@ This repository contains the source files and supplementary information for the 
 
 David Medina-Ortiz<sup>1,2</sup>, Diego Alvares-Saravia<sup>2,3</sup>, Nicole Soto-García<sup>2</sup>, Diego Sandoval-Vargas<sup>1,4</sup>, Jacqueline Aldridge<sup>2</sup>, Sebastián Rodríguez<sup>1,4</sup>, Bárbara Andrews<sup>1,4</sup>, Juan A. Asenjo<sup>1,4</sup> Anamaría Daza<sup>1,4∗</sup><br>
 Discovering potential plastic degrading enzymes using machine learning strategies. <br>
-https://doi.org/XXXX<br>
+https://doi.org/10.1101/2025.02.09.637306<br>
 
 <sup>*1*</sup><sub>Centre for Biotechnology and Bioengineering, CeBiB, Universidad de Chile, Beauchef 851, Santiago, Chile</sub> <br>
 <sup>*2*</sup><sub>Departamento de Ingeniería En Computación, Universidad de Magallanes, Avenida Bulnes 01855, Punta Arenas, Chile.</sub> <br>
